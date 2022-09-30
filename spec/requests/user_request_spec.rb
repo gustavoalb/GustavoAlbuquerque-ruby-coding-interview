@@ -30,6 +30,28 @@ RSpec.describe "Users", type: :request do
       end
     end
 
+    context "when fetching users by username" do
+      let!(:user) { create(:user, username: "test_user") }
+
+      it 'returns only the users with the specified username' do
+        get users_path(username: "test_user")
+
+        expect(result.map {|element| element['username']}).to eq(['test_user'])
+      end
+
+      it 'returns users with partial username match' do
+        get users_path(username: "test_")
+
+        expect(result.map {|element| element['username']}).to eq(['test_user'])
+      end
+
+      it 'returns nothing when nothing matches' do
+        get users_path(username: "asd")
+
+        expect(result.map {|element| element['username']}).to eq([])
+      end
+    end
+
     context 'when fetching all users' do
       include_context 'with multiple companies'
 
